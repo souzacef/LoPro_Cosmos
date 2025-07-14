@@ -1,0 +1,11 @@
+file_format: "1"
+id: loprocosmos
+name: LoPro Cosmos
+type: shield
+url: https://github.com/souzacef/LoPro_Cosmos
+requires: [pro_micro]
+features:
+  - keys
+siblings:
+  - lopro_cosmos_left
+  - lopro_cosmos_right
