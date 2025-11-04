@@ -4,13 +4,11 @@
     chosen {
         zmk,kscan = &kscan;
     };
-    
+
     kscan: kscan {
-        compatible = "zmk,kscan_gpio";
+        compatible = "zmk,kscan-mock";
         rows = <1>;
         columns = <1>;
-        row-gpios = <>;
-        col-gpios = <>;
     };
 
     zmk,usb {
@@ -23,6 +21,7 @@
         local-name = "LoPro Cosmos 3";
     };
 };
+
 
 
 
