@@ -2,10 +2,10 @@
     compatible = "zmk,keyboard";
 
     chosen {
-        zmk,kscan = &kscan0;
+        zmk,kscan = &kscan;
     };
 
-    kscan0: kscan {
+    kscan: kscan {
         compatible = "zmk,kscan_dummy";
         rows = <1>;
         columns = <1>;
@@ -21,3 +21,4 @@
         local-name = "LoPro Cosmos 3";
     };
 };
+
