@@ -7,6 +7,7 @@
 
     kscan: kscan {
         compatible = "zmk,kscan-mock";
+        events = <0x00>;    /* required placeholder */
         rows = <1>;
         columns = <1>;
     };
@@ -21,6 +22,8 @@
         local-name = "LoPro Cosmos 3";
     };
 };
+
+
 
 
 
