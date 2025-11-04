@@ -2,22 +2,20 @@
     compatible = "zmk,keyboard";
 
     chosen {
-        zmk,split-role = "central";
         zmk,kscan = &kscan0;
     };
 
-    // Dummy keyboard scan node (required to satisfy keymap/build dependencies)
     kscan0: kscan {
         compatible = "zmk,kscan_dummy";
+        rows = <1>;
+        columns = <1>;
     };
-
-    // USB interface enabled for host connection
+    
     zmk,usb {
         compatible = "zmk,usb";
         status = "okay";
     };
-
-    // Bluetooth central configuration
+    
     bt-central {
         compatible = "zmk,bluetooth";
         local-name = "LoPro Cosmos 3";
