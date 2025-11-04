@@ -1,21 +1,23 @@
-/*
- * LoPro Cosmos Central Bridge
- * Copyright (c) 2025
- * SPDX-License-Identifier: MIT
- */
-
- / {
+/ {
     compatible = "zmk,keyboard";
+
     chosen {
         zmk,split-role = "central";
+        zmk,kscan = &kscan0;
     };
 
-    // No key matrix — this unit only acts as a USB/BLE bridge
+    // Dummy keyboard scan node (required to satisfy keymap/build dependencies)
+    kscan0: kscan {
+        compatible = "zmk,kscan_dummy";
+    };
+
+    // USB interface enabled for host connection
     zmk,usb {
         compatible = "zmk,usb";
         status = "okay";
     };
 
+    // Bluetooth central configuration
     bt-central {
         compatible = "zmk,bluetooth";
         local-name = "LoPro Cosmos 3";
