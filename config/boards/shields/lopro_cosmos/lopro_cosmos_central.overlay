@@ -1,11 +1,11 @@
 / {
     compatible = "zmk,keyboard";
-    
-    chosen {
-        zmk,kscan = &dummy_kscan;
-    };
 
-    dummy_kscan: kscan {
+    chosen {
+        zmk,kscan = &kscan;
+    };
+    
+    kscan: kscan {
         compatible = "zmk,kscan_gpio";
         rows = <1>;
         columns = <1>;
@@ -23,6 +23,7 @@
         local-name = "LoPro Cosmos 3";
     };
 };
+
 
 
 
