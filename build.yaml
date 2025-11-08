@@ -17,10 +17,7 @@ include:
       -DCONFIG_ZMK_SPLIT=y
       -DCONFIG_ZMK_SPLIT_ROLE_CENTRAL=y
       -DCONFIG_ZMK_USB=y
-      -DCONFIG_ZMK_STUDIO=y
       -DCONFIG_ZMK_SPLIT_BLE=n
-      -DCONFIG_BT_PERIPHERAL=n
-      -DCONFIG_ZMK_STUDIO_BLE=n
 
   # 🔄 Settings reset (for clearing Bluetooth bonds)
   - board: nice_nano_v2
