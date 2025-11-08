@@ -3,16 +3,17 @@
 
     chosen {
         zmk,kscan = &kscan;
+        zmk,usb = &zmk_usb;      /* <--- tie the USB node explicitly */
     };
 
     kscan: kscan {
         compatible = "zmk,kscan-mock";
-        events = <0x00>;    /* required placeholder */
+        events = <0x00>;         /* required placeholder */
         rows = <1>;
         columns = <1>;
     };
 
-    zmk,usb {
+    zmk_usb: zmk_usb {
         compatible = "zmk,usb";
         status = "okay";
     };
@@ -22,6 +23,8 @@
         local-name = "LoPro Cosmos 3";
     };
 };
+
+
 
 
 
