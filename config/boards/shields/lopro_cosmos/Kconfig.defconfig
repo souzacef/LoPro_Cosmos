@@ -29,9 +29,11 @@ config ZMK_SPLIT_ROLE_CENTRAL
     default y
 
 config ZMK_STUDIO
+    bool
     default y
 
 config ZMK_STUDIO_BLE
+    bool
     default n
 
 endif
