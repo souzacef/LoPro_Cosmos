@@ -1,41 +1,28 @@
- / {
-
+/ {
     compatible = "zmk,keyboard";
 
     chosen {
-
         zmk,kscan = &kscan;
-        zmk,usb = &zmk_usb;      /* <--- tie the USB node explicitly */
-
+        zmk,usb = &zmk_usb;
     };
-
 
     kscan: kscan {
-
         compatible = "zmk,kscan-mock";
-        events = <0x00>;         /* required placeholder */
+        events = <0x00>;
         rows = <1>;
         columns = <1>;
-
     };
-
 
     zmk_usb: zmk_usb {
-
         compatible = "zmk,usb";
         status = "okay";
-
     };
-
 
     bt_central: bt_central {
-
         compatible = "zmk,bluetooth";
         local-name = "LoPro Cosmos 3";
-
     };
-
-}; 
+};
 
 
 
