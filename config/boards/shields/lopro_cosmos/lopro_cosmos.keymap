@@ -64,6 +64,6 @@
 / {
     bt-cosmo {
         compatible = "zmk,bluetooth";
-        local-name = "LoPro Cosmos";
+        local-name = "LoPro Cosmos 3";
     };
 };
