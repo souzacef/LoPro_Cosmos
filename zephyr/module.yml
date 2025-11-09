@@ -1,7 +1,10 @@
 name: lopro_cosmos
 build:
   cmake: .
+  # Tell Zephyr which Kconfig declares your shields
   kconfig: config/boards/shields/lopro_cosmos/Kconfig.shield
   settings:
+    # Tell Zephyr where the actual shield folders live
     shield_root: config/boards/shields
+
 
