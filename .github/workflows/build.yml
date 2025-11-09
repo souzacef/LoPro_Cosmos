@@ -23,11 +23,11 @@ jobs:
             shield: settings_reset
 
     steps:
-      # 🧱 Checkout the repo
+      #  Checkout the repo
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # ⚡ Cache Zephyr & West modules to speed up builds
+      #  Cache Zephyr & West modules to speed up builds
       - name: Cache Zephyr and West
         uses: actions/cache@v4
         with:
@@ -39,14 +39,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-zmk-
 
-      # 🧩 Install build dependencies
+      #  Install build dependencies
       - name: Install dependencies
         run: |
           sudo apt update
           sudo apt install -y git cmake ninja-build gperf dfu-util python3-pip python3-setuptools
           pip install --upgrade west
 
-      # 🧠 Initialize and build all firmware targets
+      #  Initialize and build all firmware targets
       - name: Initialize and build firmware
         run: |
           echo "=== Initializing West workspace ==="
@@ -69,7 +69,7 @@ jobs:
                -DSHIELD=${{ matrix.board-shield.shield }} \
                -DCONFIG_ZMK_STUDIO=y -DCONFIG_ZMK_SPLIT=y
 
-      # 📦 Upload build artifacts
+      #  Upload build artifacts
       - name: Upload firmware
         uses: actions/upload-artifact@v4
         with:
