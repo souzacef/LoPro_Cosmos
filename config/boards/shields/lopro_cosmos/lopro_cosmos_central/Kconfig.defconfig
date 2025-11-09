@@ -1,0 +1,31 @@
+if SHIELD_LOPRO_COSMOS_LEFT
+
+config ZMK_KEYBOARD_NAME
+    default "LoPro Cosmos"
+
+config ZMK_SPLIT
+    default y
+
+endif
+
+
+if SHIELD_LOPRO_COSMOS_LEFT || SHIELD_LOPRO_COSMOS_RIGHT
+
+config ZMK_SPLIT
+    default y
+
+endif
+
+
+if SHIELD_LOPRO_COSMOS_CENTRAL
+
+config ZMK_KEYBOARD_NAME
+    default "LoPro Cosmos 3"
+
+config ZMK_SPLIT
+    default y
+
+config ZMK_SPLIT_ROLE_CENTRAL
+    default y
+
+endif
