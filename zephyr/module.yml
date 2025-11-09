@@ -1,6 +1,7 @@
 name: lopro_cosmos
 build:
   cmake: .
-  kconfig: Kconfig
+  kconfig: config/boards/shields/lopro_cosmos/Kconfig.shield
   settings:
     shield_root: config/boards/shields
+
