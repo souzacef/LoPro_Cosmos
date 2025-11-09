@@ -33,7 +33,7 @@ jobs:
 
       - name: Initialize ZMK workspace
         run: |
-          west init -m https://github.com/zmkfirmware/zmk --mr main
+          west init -l config
           west update
 
       - name: Build firmware
