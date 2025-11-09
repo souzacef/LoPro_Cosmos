@@ -1,93 +1,100 @@
-name: LoPro Cosmos Build
+name: Build ZMK Firmware (Full Multi-Build)
 
+# Temporarily disabled automatic triggers — manual run only
 on:
-  push:
-  pull_request:
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        board-shield:
-          - board: nice_nano_v2
-            shield: lopro_cosmos_left
-          - board: nice_nano_v2
-            shield: lopro_cosmos_right
-          - board: nice_nano_v2
-            shield: lopro_cosmos_central
-            snippet: studio-rpc-usb-uart
-          - board: nice_nano_v2
-            shield: settings_reset
-
     steps:
-      # 🧱 Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # ⚡ Cache Zephyr + West + SDK
-      - name: Cache Zephyr, West, and SDK
+      - name: Setup cache for Zephyr SDK
         uses: actions/cache@v4
-        id: cache-zephyr
         with:
           path: |
-            ~/.west
-            ~/.zephyr
-            zephyr/.cache
+            ~/.cache/zephyr
             /opt/zephyr-sdk-0.16.9
           key: ${{ runner.os }}-zephyr-sdk-0.16.9-v6-${{ hashFiles('**/west.yml') }}
           restore-keys: |
             ${{ runner.os }}-zephyr-sdk-0.16.9-
 
-      # 🧩 Install dependencies and Zephyr SDK if cache miss
-      - name: Install dependencies and Zephyr SDK
-        if: steps.cache-zephyr.outputs.cache-hit != 'true'
-        run: |
-          sudo apt update
-          sudo apt install -y git cmake ninja-build gperf dfu-util python3-pip python3-setuptools xz-utils wget
-          pip install --upgrade west
-
-          echo "=== Downloading Zephyr SDK ==="
-          wget https://github.com/zephyrproject-rtos/sdk-ng/releases/download/v0.16.9/zephyr-sdk-0.16.9_linux-x86_64.tar.xz
-          sudo mkdir -p /opt
-          sudo tar -xf zephyr-sdk-0.16.9_linux-x86_64.tar.xz -C /opt
-          sudo /opt/zephyr-sdk-0.16.9/setup.sh -t all -h -c
-
-      # 🧠 Export toolchain environment
-      - name: Export environment variables
+      - name: Set environment variables
         run: |
           echo "ZEPHYR_TOOLCHAIN_VARIANT=zephyr" >> $GITHUB_ENV
           echo "ZEPHYR_SDK_INSTALL_DIR=/opt/zephyr-sdk-0.16.9" >> $GITHUB_ENV
-          echo "=== Using Zephyr SDK from /opt/zephyr-sdk-0.16.9 ==="
 
-      # 🧩 Initialize and build firmware
-      - name: Initialize and build firmware
+      - name: Install prerequisites
         run: |
-          echo "=== Initializing West workspace ==="
+          sudo apt update
+          sudo apt install -y git wget xz-utils file cmake ninja-build gperf ccache dfu-util python3-dev python3-pip python3-setuptools python3-tk python3-wheel xz-utils device-tree-compiler
+
+      - name: Install west and dependencies
+        run: |
+          pip3 install --user west
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Clean West workspace and initialize ZMK
+        run: |
+          echo "=== Cleaning and initializing West workspace ==="
+          rm -rf .west
           west init -l config
           west update
           west zephyr-export
 
-          echo "=== Building for ${{ matrix.board-shield.shield }} ==="
-          BUILD_DIR="/tmp/build_${{ matrix.board-shield.shield }}"
+      - name: Build LoPro Cosmos Left
+        run: |
+          echo "=== Building for lopro_cosmos_left ==="
+          BUILD_DIR="/tmp/build_lopro_cosmos_left"
           mkdir -p "$BUILD_DIR"
-
-          WEST_SNIPPET_ARG=""
-          if [[ -n "${{ matrix.board-shield.snippet }}" ]]; then
-            WEST_SNIPPET_ARG="-S ${{ matrix.board-shield.snippet }}"
-          fi
-
           west build -s zmk/app -d "$BUILD_DIR" \
-            -b ${{ matrix.board-shield.board }} $WEST_SNIPPET_ARG \
+            -b nice_nano_v2 \
             -- -DZMK_CONFIG=config \
-               -DSHIELD=${{ matrix.board-shield.shield }} \
+               -DSHIELD=lopro_cosmos_left \
                -DCONFIG_ZMK_STUDIO=y -DCONFIG_ZMK_SPLIT=y
 
-      # 📦 Upload build artifacts
-      - name: Upload firmware
+      - name: Build LoPro Cosmos Right
+        run: |
+          echo "=== Building for lopro_cosmos_right ==="
+          BUILD_DIR="/tmp/build_lopro_cosmos_right"
+          mkdir -p "$BUILD_DIR"
+          west build -s zmk/app -d "$BUILD_DIR" \
+            -b nice_nano_v2 \
+            -- -DZMK_CONFIG=config \
+               -DSHIELD=lopro_cosmos_right \
+               -DCONFIG_ZMK_STUDIO=y -DCONFIG_ZMK_SPLIT=y
+
+      - name: Build LoPro Cosmos Central
+        run: |
+          echo "=== Building for lopro_cosmos_central ==="
+          BUILD_DIR="/tmp/build_lopro_cosmos_central"
+          mkdir -p "$BUILD_DIR"
+          west build -s zmk/app -d "$BUILD_DIR" \
+            -b nice_nano_v2 -S studio-rpc-usb-uart \
+            -- -DZMK_CONFIG=config \
+               -DSHIELD=lopro_cosmos_central \
+               -DCONFIG_ZMK_STUDIO=y -DCONFIG_ZMK_SPLIT=y \
+               -DCONFIG_ZMK_SPLIT_ROLE_CENTRAL=y -DCONFIG_ZMK_OUTPUT_USB=y
+
+      - name: Build Settings Reset
+        run: |
+          echo "=== Building for settings_reset ==="
+          BUILD_DIR="/tmp/build_settings_reset"
+          mkdir -p "$BUILD_DIR"
+          west build -s zmk/app -d "$BUILD_DIR" \
+            -b nice_nano_v2 \
+            -- -DZMK_CONFIG=config \
+               -DSHIELD=settings_reset
+
+      - name: Upload firmware artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.board-shield.shield }}
-          path: /tmp/build_${{ matrix.board-shield.shield }}/zephyr/zephyr.uf2
+          name: LoPro_Cosmos_Firmware
+          path: |
+            /tmp/build_lopro_cosmos_left/zephyr/zmk.uf2
+            /tmp/build_lopro_cosmos_right/zephyr/zmk.uf2
+            /tmp/build_lopro_cosmos_central/zephyr/zmk.uf2
+            /tmp/build_settings_reset/zephyr/zmk.uf2

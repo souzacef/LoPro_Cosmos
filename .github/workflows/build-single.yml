@@ -1,0 +1,97 @@
+name: Build ZMK Firmware (Single Target)
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup cache for Zephyr SDK
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/zephyr
+            /opt/zephyr-sdk-0.16.9
+          key: ${{ runner.os }}-zephyr-sdk-0.16.9-v7-${{ hashFiles('**/west.yml') }}
+          restore-keys: |
+            ${{ runner.os }}-zephyr-sdk-0.16.9-
+
+      - name: Set environment variables
+        run: |
+          echo "ZEPHYR_TOOLCHAIN_VARIANT=zephyr" >> $GITHUB_ENV
+          echo "ZEPHYR_SDK_INSTALL_DIR=/opt/zephyr-sdk-0.16.9" >> $GITHUB_ENV
+
+      - name: Install prerequisites
+        run: |
+          sudo apt update
+          sudo apt install -y git wget xz-utils file cmake ninja-build gperf ccache dfu-util python3-dev python3-pip python3-setuptools python3-tk python3-wheel xz-utils device-tree-compiler
+
+      - name: Install west and dependencies
+        run: |
+          pip3 install --user west
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Clean West workspace and initialize ZMK
+        run: |
+          echo "=== Cleaning and initializing West workspace ==="
+          rm -rf .west
+          west init -l config
+          west update
+          west zephyr-export
+
+      # ======================================================
+      # 🧩 Pick ONE target below to test module/shield loading
+      # ======================================================
+
+      - name: Build LoPro Cosmos LEFT
+        run: |
+          echo "=== Building for lopro_cosmos_left ==="
+          BUILD_DIR="/tmp/build_lopro_cosmos_left"
+          mkdir -p "$BUILD_DIR"
+          west build -s zmk/app -d "$BUILD_DIR" \
+            -b nice_nano_v2 \
+            -- -DZMK_CONFIG=config \
+               -DSHIELD=lopro_cosmos_left \
+               -DCONFIG_ZMK_STUDIO=y -DCONFIG_ZMK_SPLIT=y
+
+      # Uncomment one of the blocks below to test other halves later:
+      #
+      # - name: Build LoPro Cosmos RIGHT
+      #   run: |
+      #     echo "=== Building for lopro_cosmos_right ==="
+      #     BUILD_DIR="/tmp/build_lopro_cosmos_right"
+      #     mkdir -p "$BUILD_DIR"
+      #     west build -s zmk/app -d "$BUILD_DIR" \
+      #       -b nice_nano_v2 \
+      #       -- -DZMK_CONFIG=config \
+      #          -DSHIELD=lopro_cosmos_right \
+      #          -DCONFIG_ZMK_STUDIO=y -DCONFIG_ZMK_SPLIT=y
+      #
+      # - name: Build LoPro Cosmos CENTRAL
+      #   run: |
+      #     echo "=== Building for lopro_cosmos_central ==="
+      #     BUILD_DIR="/tmp/build_lopro_cosmos_central"
+      #     mkdir -p "$BUILD_DIR"
+      #     west build -s zmk/app -d "$BUILD_DIR" \
+      #       -b nice_nano_v2 -S studio-rpc-usb-uart \
+      #       -- -DZMK_CONFIG=config \
+      #          -DSHIELD=lopro_cosmos_central \
+      #          -DCONFIG_ZMK_STUDIO=y -DCONFIG_ZMK_SPLIT=y \
+      #          -DCONFIG_ZMK_SPLIT_ROLE_CENTRAL=y -DCONFIG_ZMK_OUTPUT_USB=y
+
+      # ======================================================
+      # Upload result
+      # ======================================================
+
+      - name: Upload firmware artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: lopro_cosmos_left_firmware
+          path: /tmp/build_lopro_cosmos_left/zephyr/zmk.uf2
