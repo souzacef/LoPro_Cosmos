@@ -10,6 +10,5 @@ manifest:
       import: app/west.yml
 
   self:
-    path: config
-    west-commands: ../
+    path: config    
 
