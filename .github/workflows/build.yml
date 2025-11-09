@@ -23,30 +23,46 @@ jobs:
             shield: settings_reset
 
     steps:
-      #  Checkout the repo
+      # 🧱 Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      #  Cache Zephyr & West modules to speed up builds
-      - name: Cache Zephyr and West
+      # ⚡ Cache Zephyr + West + SDK
+      - name: Cache Zephyr, West, and SDK
         uses: actions/cache@v4
+        id: cache-zephyr
         with:
           path: |
             ~/.west
             ~/.zephyr
             zephyr/.cache
-          key: ${{ runner.os }}-zmk-${{ hashFiles('**/west.yml') }}
+            /opt/zephyr-sdk-0.16.9
+          key: ${{ runner.os }}-zephyr-sdk-0.16.9-${{ hashFiles('**/west.yml') }}
           restore-keys: |
-            ${{ runner.os }}-zmk-
+            ${{ runner.os }}-zephyr-sdk-0.16.9-
 
-      #  Install build dependencies
-      - name: Install dependencies
+      # 🧩 Install dependencies and Zephyr SDK if cache miss
+      - name: Install dependencies and Zephyr SDK
+        if: steps.cache-zephyr.outputs.cache-hit != 'true'
         run: |
           sudo apt update
-          sudo apt install -y git cmake ninja-build gperf dfu-util python3-pip python3-setuptools
+          sudo apt install -y git cmake ninja-build gperf dfu-util python3-pip python3-setuptools xz-utils wget
           pip install --upgrade west
 
-      #  Initialize and build all firmware targets
+          echo "=== Downloading Zephyr SDK ==="
+          wget https://github.com/zephyrproject-rtos/sdk-ng/releases/download/v0.16.9/zephyr-sdk-0.16.9_linux-x86_64.tar.xz
+          sudo mkdir -p /opt
+          sudo tar -xf zephyr-sdk-0.16.9_linux-x86_64.tar.xz -C /opt
+          sudo /opt/zephyr-sdk-0.16.9/setup.sh -t all -h -c
+
+      # 🧠 Export toolchain environment
+      - name: Export environment variables
+        run: |
+          echo "ZEPHYR_TOOLCHAIN_VARIANT=zephyr" >> $GITHUB_ENV
+          echo "ZEPHYR_SDK_INSTALL_DIR=/opt/zephyr-sdk-0.16.9" >> $GITHUB_ENV
+          echo "=== Using Zephyr SDK from /opt/zephyr-sdk-0.16.9 ==="
+
+      # 🧩 Initialize and build firmware
       - name: Initialize and build firmware
         run: |
           echo "=== Initializing West workspace ==="
@@ -69,7 +85,7 @@ jobs:
                -DSHIELD=${{ matrix.board-shield.shield }} \
                -DCONFIG_ZMK_STUDIO=y -DCONFIG_ZMK_SPLIT=y
 
-      #  Upload build artifacts
+      # 📦 Upload build artifacts
       - name: Upload firmware
         uses: actions/upload-artifact@v4
         with:
