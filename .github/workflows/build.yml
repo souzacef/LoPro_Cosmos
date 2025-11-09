@@ -37,7 +37,7 @@ jobs:
             ~/.zephyr
             zephyr/.cache
             /opt/zephyr-sdk-0.16.9
-          key: ${{ runner.os }}-zephyr-sdk-0.16.9-${{ hashFiles('**/west.yml') }}
+          key: ${{ runner.os }}-zephyr-sdk-0.16.9-v6-${{ hashFiles('**/west.yml') }}
           restore-keys: |
             ${{ runner.os }}-zephyr-sdk-0.16.9-
 
