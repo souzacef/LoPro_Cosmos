@@ -53,7 +53,7 @@ jobs:
                -DCONFIG_ZMK_STUDIO=y -DCONFIG_ZMK_SPLIT=y
 
       - name: Upload firmware
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.board-shield.shield }}
           path: /tmp/build_${{ matrix.board-shield.shield }}/zephyr/zephyr.uf2
