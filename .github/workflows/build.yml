@@ -1,5 +1,59 @@
-on: [push, pull_request, workflow_dispatch]
+name: LoPro Cosmos Build
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
 
 jobs:
   build:
-    uses: zmkfirmware/zmk/.github/workflows/build-user-config.yml@main
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        board-shield:
+          - board: nice_nano_v2
+            shield: lopro_cosmos_left
+          - board: nice_nano_v2
+            shield: lopro_cosmos_right
+          - board: nice_nano_v2
+            shield: lopro_cosmos_central
+            snippet: studio-rpc-usb-uart
+          - board: nice_nano_v2
+            shield: settings_reset
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y git cmake ninja-build gperf dfu-util python3-pip python3-setuptools
+          pip install --upgrade west
+
+      - name: Initialize ZMK workspace
+        run: |
+          west init -m https://github.com/zmkfirmware/zmk --mr main
+          west update
+
+      - name: Build firmware
+        run: |
+          BUILD_DIR="/tmp/build_${{ matrix.board-shield.shield }}"
+          mkdir -p "$BUILD_DIR"
+
+          WEST_SNIPPET_ARG=""
+          if [[ -n "${{ matrix.board-shield.snippet }}" ]]; then
+            WEST_SNIPPET_ARG="-S ${{ matrix.board-shield.snippet }}"
+          fi
+
+          west build -s zmk/app -d "$BUILD_DIR" \
+            -b ${{ matrix.board-shield.board }} $WEST_SNIPPET_ARG \
+            -- -DZMK_CONFIG=config \
+               -DSHIELD=${{ matrix.board-shield.shield }} \
+               -DCONFIG_ZMK_STUDIO=y -DCONFIG_ZMK_SPLIT=y
+
+      - name: Upload firmware
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.board-shield.shield }}
+          path: /tmp/build_${{ matrix.board-shield.shield }}/zephyr/zephyr.uf2
