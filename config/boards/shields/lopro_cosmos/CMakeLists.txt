@@ -1,0 +1,3 @@
+add_subdirectory(lopro_cosmos_left)
+add_subdirectory(lopro_cosmos_right)
+add_subdirectory(lopro_cosmos_central)
