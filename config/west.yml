@@ -9,9 +9,6 @@ manifest:
       revision: main
       import: app/west.yml
 
-    - name: lopro_cosmos
-      path: ..
-
   self:
     path: config
     west-commands: ../
