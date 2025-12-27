@@ -1,7 +1,7 @@
 #include "lopro_cosmos.dtsi"
 
 &default_transform {
-    col-offset = <6>;
+    col-offset = <12>;
 };
 
 &kscan0 {
