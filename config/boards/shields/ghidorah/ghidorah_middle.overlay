@@ -1,12 +1,10 @@
 #include "ghidorah.dtsi"
 
-/ {
-    i2c0: i2c@40003000 {
-        compatible = "nordic,nrf-twim";
-        status = "okay";
-        scl-pin = <6>;   /* P0.06 = D1 */
-        sda-pin = <8>;   /* P0.08 = D0 */
-    };
+/* Enable and configure existing I2C controller */
+&i2c0 {
+    status = "okay";
+    scl-pin = <6>;   /* P0.06 = D1 */
+    sda-pin = <8>;   /* P0.08 = D0 */
 
     oled: ssd1306@3c {
         compatible = "solomon,ssd1306fb";
@@ -22,10 +20,12 @@
     };
 };
 
+/* Tell Zephyr/ZMK this is the active display */
 &{/chosen} {
     zephyr,display = &oled;
 };
 
+/* Existing matrix config, unchanged */
 &kscan0 {
     col-gpios =
         <&pro_micro 10 GPIO_ACTIVE_HIGH>,
