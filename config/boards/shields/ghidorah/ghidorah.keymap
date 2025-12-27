@@ -62,8 +62,8 @@
 };
 
 / {
-    bt-cosmo {
+    bt-ghidorah {
         compatible = "zmk,bluetooth";
-        local-name = "LoPro Cosmos 3";
+        local-name = "Ghidorah";
     };
 };

@@ -1,0 +1,17 @@
+if SHIELD_GHIDORAH_MIDDLE
+
+config ZMK_KEYBOARD_NAME
+    default "Ghidorah"
+
+config ZMK_SPLIT_ROLE_CENTRAL
+    default y
+
+endif
+
+if SHIELD_GHIDORAH_MIDDLE || SHIELD_GHIDORAH_RIGHT || SHIELD_GHIDORAH_KEVIN
+
+config ZMK_SPLIT
+    default y
+
+endif
+

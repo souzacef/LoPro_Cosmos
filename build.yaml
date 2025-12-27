@@ -1,9 +1,10 @@
 include:
   - board: nice_nano
-    shield: lopro_cosmos_left
+    shield: ghidorah_middle
   - board: nice_nano
-    shield: lopro_cosmos_right
+    shield: ghidorah_right
   - board: nice_nano
-    shield: lopro_cosmos_left_peripheral
+    shield: ghidorah_kevin
   - board: nice_nano
     shield: settings_reset
+

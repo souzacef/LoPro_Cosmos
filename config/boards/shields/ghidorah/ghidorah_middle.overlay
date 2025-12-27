@@ -1,4 +1,4 @@
-#include "lopro_cosmos.dtsi"
+#include "ghidorah.dtsi"
 
 &kscan0 {
     col-gpios =

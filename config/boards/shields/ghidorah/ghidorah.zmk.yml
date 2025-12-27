@@ -1,0 +1,13 @@
+file_format: "1"
+id: ghidorah
+name: Ghidorah
+type: shield
+url: https://github.com/souzacef/Ghidorah
+requires: [pro_micro]
+features:
+  - keys
+siblings:
+  - ghidorah_middle
+  - ghidorah_right
+  - ghidorah_kevin
+

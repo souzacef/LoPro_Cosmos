@@ -1,0 +1,9 @@
+config SHIELD_GHIDORAH_MIDDLE
+    def_bool $(shields_list_contains,ghidorah_middle)
+
+config SHIELD_GHIDORAH_RIGHT
+    def_bool $(shields_list_contains,ghidorah_right)
+
+config SHIELD_GHIDORAH_KEVIN
+    def_bool $(shields_list_contains,ghidorah_kevin)
+
