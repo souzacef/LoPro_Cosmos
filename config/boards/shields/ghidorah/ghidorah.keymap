@@ -67,3 +67,11 @@
         local-name = "Ghidorah";
     };
 };
+
+/ {
+    zmk_display {
+        compatible = "zmk,display";
+        label = "ZMK Display";
+        status = "okay";
+    };
+};
