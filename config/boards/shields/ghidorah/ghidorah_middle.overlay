@@ -2,7 +2,7 @@
 
 / {
     pinctrl {
-        i2c0_ghidorah: i2c0_ghidorah {
+        i2c0_ghidorah_default: i2c0_ghidorah_default {
             group1 {
                 psels = <
                     NRF_PSEL(TWIM_SDA, 0, 17) /* D2 */
@@ -10,24 +10,34 @@
                 >;
             };
         };
+
+        i2c0_ghidorah_sleep: i2c0_ghidorah_sleep {
+            group1 {
+                psels = <
+                    NRF_PSEL(TWIM_SDA, 0, 17)
+                    NRF_PSEL(TWIM_SCL, 0, 20)
+                >;
+                low-power-enable;
+            };
+        };
     };
 };
 
 &i2c0 {
     status = "okay";
-    pinctrl-0 = <&i2c0_ghidorah>;
-    pinctrl-names = "default";
+    pinctrl-0 = <&i2c0_ghidorah_default>;
+    pinctrl-1 = <&i2c0_ghidorah_sleep>;
+    pinctrl-names = "default", "sleep";
 
     oled: ssd1306@3c {
         compatible = "solomon,ssd1306fb";
         reg = <0x3c>;
         width = <128>;
         height = <32>;
+        multiplex-ratio = <31>;
         segment-offset = <0>;
         page-offset = <0>;
         display-offset = <0>;
-        multiplex-ratio = <31>;
-        prechargep = <0x22>;
         status = "okay";
     };
 };
