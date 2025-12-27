@@ -1,59 +1,57 @@
-#include "ghidorah.dtsi"
+/*
+ * Ghidorah – Middle (Central) Shield
+ * nice!nano v2 + SSD1306 128x32 OLED
+ */
 
 / {
-    pinctrl {
-        i2c0_ghidorah_default: i2c0_ghidorah_default {
-            group1 {
-                psels = <
-                    NRF_PSEL(TWIM_SDA, 0, 17) /* D2 */
-                    NRF_PSEL(TWIM_SCL, 0, 20) /* D3 */
-                >;
-            };
-        };
+    chosen {
+        zephyr,display = &oled;
+    };
+};
 
-        i2c0_ghidorah_sleep: i2c0_ghidorah_sleep {
-            group1 {
-                psels = <
-                    NRF_PSEL(TWIM_SDA, 0, 17)
-                    NRF_PSEL(TWIM_SCL, 0, 20)
-                >;
-                low-power-enable;
-            };
+/* -------------------- PINCTRL -------------------- */
+
+&pinctrl {
+    i2c0_ghidorah_default: i2c0_ghidorah_default {
+        group1 {
+            psels = <
+                NRF_PSEL(TWIM_SDA, 0, 26)
+                NRF_PSEL(TWIM_SCL, 0, 27)
+            >;
+            bias-pull-up;
         };
     };
 };
 
+/* -------------------- I2C BUS -------------------- */
+
 &i2c0 {
+    compatible = "nordic,nrf-twi";
     status = "okay";
+
     pinctrl-0 = <&i2c0_ghidorah_default>;
-    pinctrl-1 = <&i2c0_ghidorah_sleep>;
-    pinctrl-names = "default", "sleep";
+    pinctrl-names = "default";
+
+    clock-frequency = <I2C_BITRATE_STANDARD>;
 
     oled: ssd1306@3c {
-    compatible = "solomon,ssd1306fb";
-    reg = <0x3c>;
+        compatible = "solomon,ssd1306fb";
+        reg = <0x3c>;
 
-    width = <128>;
-    height = <32>;
+        width = <128>;
+        height = <32>;
 
-    multiplex-ratio = <31>;
-    segment-offset = <0>;
-    page-offset = <0>;
-    display-offset = <0>;
+        segment-offset = <0>;
+        page-offset = <0>;
+        display-offset = <0>;
+        multiplex-ratio = <31>;
 
-    prechargep = <0x22>;
+        prechargep = <0x22>;
 
-    status = "okay";
+        status = "okay";
+    };
 };
 
-};
-
-&{/chosen} {
-    zephyr,display = &oled;
-};
-
-
-/* Matrix stays untouched */
 &kscan0 {
     col-gpios =
         <&pro_micro 10 GPIO_ACTIVE_HIGH>,
